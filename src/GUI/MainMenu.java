@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import GUI.Data.DataStore;
 
@@ -59,8 +60,11 @@ public class MainMenu extends GUIElement {
 		} else if (source.equals(_stats)) {
 			_GUI.getContentPane().add(new ViewStats(_GUI, _data, this));
 		} else if (source.equals(_clear)) {
-			_GUI.getContentPane().removeAll();
-			_GUI.getContentPane().add(new ResetData(_GUI, _data));
+			int reply = JOptionPane.showConfirmDialog(_GUI, "Are you sure you wish to clear all data?\nYour statistics will not be able to be recovered.");
+			if (reply == JOptionPane.YES_OPTION) {
+				JOptionPane.showMessageDialog(_GUI, "Your data has been reset.");
+				_data.overrideAll();
+			}
 		}
 		
 		_GUI.revalidate();
