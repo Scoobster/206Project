@@ -4,6 +4,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import GUI.QuizScreen;
 import GUI.TitleScreen;
 import GUI.Data.DataStore;
 
@@ -20,7 +21,8 @@ public class MainGUI extends JFrame {
 			
 		setSize(400, 400);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);	
-		add(new TitleScreen(this, _data));
+		//add(new TitleScreen(this, _data));
+		add(new QuizScreen(this, _data, null));
 		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {

@@ -136,16 +136,7 @@ public class SpellingTest extends GUIElement {
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 			protected Void doInBackground() throws Exception {
 
-				String voice = "";
-				if (_voiceSelect.getSelectedItem().equals("American")) {
-					voice = "(voice_kal_diphone)";
-				} else if (_voiceSelect.getSelectedItem().equals("British")) {
-					voice = "(voice_rab_diphone)";
-				} else if (_voiceSelect.getSelectedItem().equals("New Zealander")) {
-					voice = "(voice_akl_nz_jdt_diphone)";
-				}
-
-				ProcessBuilder builder = new ProcessBuilder(_data.getFestival(), voice, "(SayText \"" + word + "\")");
+				ProcessBuilder builder = new ProcessBuilder("usr/bin/festival", _data.getVoice(), "(SayText \"" + word + "\")");
 
 				try {
 					builder.start();
@@ -186,19 +177,9 @@ public class SpellingTest extends GUIElement {
 				if (input.equals(word)) {
 
 					_wordlist.get(_wordNum).increment(0);
-
-					if (_isReview) {
-						//_data.getMistakes().remove(_wordlist.get(_wordNum));
-						_toRemove.add(_wordlist.get(_wordNum));
-					}
-
-					_wordNum++;
-					_correctCount++;
-
 					_labelOfStuff.setText("CORRECT!");
-					_input.setText("");
-					int num = _wordNum + 1;
-					_wordLabel.setText("Word " + num + " of " + _maxWords);
+					_correctCount++;
+					nextWord();
 
 				} else {
 
@@ -213,36 +194,15 @@ public class SpellingTest extends GUIElement {
 				if (input.equals(word)) {
 
 					_wordlist.get(_wordNum).increment(1);
-
-					if (_isReview) {
-						//_data.getMistakes().remove(_wordlist.get(_wordNum));
-						_toRemove.add(_wordlist.get(_wordNum));
-					}
-
-					_wordNum++;
-					_correctCount++;
-					_attemptCount = 0;
-
 					_labelOfStuff.setText("CORRECT!");
-					_input.setText("");
-					int num = _wordNum + 1;
-					_wordLabel.setText("Word " + num + " of " + _maxWords);
-
+					_correctCount++;
+					nextWord();
+					
 				} else {
 
 					_wordlist.get(_wordNum).increment(2);
-
-					if (!_isReview) {
-						_data.getMistakes().add(_wordlist.get(_wordNum));
-					}
-
-					_wordNum++;
-					_attemptCount = 0;
-
 					_labelOfStuff.setText("Incorrect :(");
-					_input.setText("");
-					int num = _wordNum + 1;
-					_wordLabel.setText("Word " + num + " of " + _maxWords);
+					nextWord();
 
 				}
 
@@ -268,6 +228,21 @@ public class SpellingTest extends GUIElement {
 
 		}
 
+	}
+	
+	private void nextWord() {
+		
+		if (!_isReview) {
+			_data.getMistakes().add(_wordlist.get(_wordNum));
+		}
+
+		_wordNum++;
+		_attemptCount = 0;
+
+		_input.setText("");
+		int num = _wordNum + 1;
+		_wordLabel.setText("Word " + num + " of " + _maxWords);
+		
 	}
 	
 	private boolean isAlpha(String word) {

@@ -10,17 +10,21 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
+/**
+ * 
+ * @author ngav018
+ *
+ */
+
 public class DataStore {
 
 
 	private String _currentLevel = "Level 1";
 	private ArrayList<WordList> _wordLists = new ArrayList<WordList>();
 	private WordList _mistakes = new WordList("mistakes");
-	private String _festivalPath;
-
+	
 	public DataStore() {
-		readFromFile();
-		locateFestival();
+		//readFromFile();
 	}
 	
 	private void readFromFile() {
@@ -262,40 +266,28 @@ public class DataStore {
 		return names[0];
 	}
 	
-	private void locateFestival() {
-			
-		File file = new File(".save");
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	
+	/**
+	 * Andrew Additions!!!!!!!!!!!!!!!!!!!
+	 */
+	
+	private String _voice = "(voice_kal_diphone)";
+	
+	public void setVoice(String voice) {
 		
-		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c","which festival > '" + file.getAbsolutePath() + "'");
-		try {
-			builder.start();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (voice.equals("American")) {
+			_voice = "(voice_kal_diphone)";
+		} else if (voice.equals("British")) {
+			_voice = "(voice_rab_diphone)";
+		} else if (voice.equals("New Zealander")) {
+			_voice = "(voice_akl_nz_jdt_diphone)";
 		}
-			
-		Scanner scan = null;
-		try {
-			scan = new Scanner(file);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		String line = scan.nextLine();
-		_festivalPath = line;
-		
-		scan.close();
-		file.delete();
 		
 	}
 	
-	public String getFestival() {
-		return _festivalPath;
+	public String getVoice() {
+		return _voice;
 	}
-	
 	
 	
 }
