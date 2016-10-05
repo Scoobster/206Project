@@ -80,4 +80,10 @@ public class Word{
 		}
 		return sameSame;
 	}
+	
+	public void addStats(int mastered, int faulted, int failed) {
+		_mastered = mastered;
+		_faulted = faulted;
+		_failed = failed;
+	}
 }

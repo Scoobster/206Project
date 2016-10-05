@@ -21,6 +21,30 @@ public class WordList {
 		}
 	}
 	
+	public void add(String line) {
+		 String[] lineParts = getWordInfo(line);
+		if (containsWord(lineParts[0])) {
+			getWord(lineParts[0]).addStats(Integer.parseInt(lineParts[1]), Integer.parseInt(lineParts[2]), Integer.parseInt(lineParts[3]));
+		} else {
+			add(new Word(lineParts[0], Integer.parseInt(lineParts[1]), Integer.parseInt(lineParts[2]), Integer.parseInt(lineParts[3])));
+		}
+	}
+	
+	private String[] getWordInfo(String line) {
+		
+		String[] wordInfo = line.split("\\s+");	
+		if (wordInfo.length > 4) {
+			String word = "";
+			for (int i = 0; i < wordInfo.length - 3; i++) {
+				word = word + " " + wordInfo[i];
+			}
+			String[] twoWords = {word, wordInfo[wordInfo.length - 3], wordInfo[wordInfo.length - 2], wordInfo[wordInfo.length - 1]};
+			wordInfo = twoWords;
+		}
+		return wordInfo;
+		
+	}
+	
 	public void remove(Word word) {
 		_list.remove(word);
 	}
@@ -55,6 +79,15 @@ public class WordList {
 			}
 		}
 		return false;
+	}
+	
+	public Word getWord(String word) {
+		for (Word var : _list) {
+			if (var.getWord().equals(word)) {
+				return var;
+			}
+		}
+		return null;
 	}
 	
 	public void addToScore(int score) {

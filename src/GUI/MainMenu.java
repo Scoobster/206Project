@@ -41,8 +41,7 @@ public class MainMenu extends GUIElement {
 			current.setPreferredSize(new Dimension(200,50));
 			add(current,c);
 		}
-		
-		
+				
 	}
 
 	@Override

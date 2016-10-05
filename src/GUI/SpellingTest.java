@@ -136,7 +136,7 @@ public class SpellingTest extends GUIElement {
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 			protected Void doInBackground() throws Exception {
 
-				ProcessBuilder builder = new ProcessBuilder("usr/bin/festival", _data.getVoice(), "(SayText \"" + word + "\")");
+				ProcessBuilder builder = new ProcessBuilder("/usr/bin/festival", _data.getVoice(), "(SayText \"" + word + "\")");
 
 				try {
 					builder.start();

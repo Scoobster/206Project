@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
@@ -18,18 +19,30 @@ import javax.swing.JOptionPane;
 
 public class DataStore {
 
+	private String _currentUser = null;
+	private int _score = 0;
 
 	private String _currentLevel = "Level 1";
 	private ArrayList<WordList> _wordLists = new ArrayList<WordList>();
 	private WordList _mistakes = new WordList("mistakes");
 	
 	public DataStore() {
-		//readFromFile();
+		setupLists();
+		generateUsers();
 	}
 	
-	private void readFromFile() {
-		File file = new File(".Data.txt");
+	/*
+	 * 
+	 * CHECK THIS SHIT!
+	 * 
+	 */
+	
+	private void readUserFile() {
+		
+		File file = new File("res/." + _currentUser + ".data");
+		
 		if (file.isFile()) {
+			
 			Scanner scanFile = null;
 			try {
 				scanFile = new Scanner(file);
@@ -39,23 +52,36 @@ public class DataStore {
 
 			if (scanFile.hasNextLine()) {
 				
-				_currentLevel = scanFile.nextLine();
+				_score = Integer.parseInt(scanFile.nextLine());
 				
-				WordList var = new WordList(scanFile.nextLine().substring(1));
-
+				setVoice(scanFile.nextLine());
+				
+				WordList var = null;
+				
+				String line = scanFile.nextLine();
+				if (doesListExist(line.substring(1))) {
+					var = getList(line.substring(1));
+				} else {
+					var = new WordList(line.substring(1));
+					_wordLists.add(var);
+				}
+				
 				while (scanFile.hasNextLine()) {
-					String line = scanFile.nextLine();
-					if (line.equals("%mistakes")) {
-						var = _mistakes;
-					} else if (line.startsWith("%")) {
-						var = new WordList(line.substring(1));
-						if (!var.getName().equals("mistakes")) {
+					line = scanFile.nextLine();
+					if (line.startsWith("%")) {
+						if (doesListExist(line.substring(1))) {
+							var = getList(line.substring(1));
+						} else {
+							var = new WordList(line.substring(1));
 							_wordLists.add(var);
 						}
 					} else {
-						addWordFromString(var, line);
+						var.add(line);
 					}
 				}
+				
+				
+				
 			}
 			scanFile.close();
 		} else {
@@ -65,6 +91,12 @@ public class DataStore {
 				e.printStackTrace();
 			}
 		}
+	}
+	/*
+	 * CHECK THIS SHIT!
+	 */
+	
+	public void setupLists() {
 
 		File levels = new File("NZCER-spelling-lists.txt");
 		Scanner levelsFile = null;
@@ -74,56 +106,25 @@ public class DataStore {
 			e.printStackTrace();
 		}
 
-		WordList var = null;
-		
-		String line = levelsFile.nextLine();
-		if (doesListExist(line.substring(1))) {
-			var = getList(line.substring(1));
-		} else {
-			var = new WordList(line.substring(1));
-			_wordLists.add(var);
-		}
-		
+		WordList var = new WordList(levelsFile.nextLine().substring(1));
+		_wordLists.add(var);
+
 		while (levelsFile.hasNextLine()) {
-			line = levelsFile.nextLine();
-			if (line.startsWith("%")) {
-				if (doesListExist(line.substring(1))) {
-					var = getList(line.substring(1));
-				} else {
-					var = new WordList(line.substring(1));
+			String line = levelsFile.nextLine();
+			if (line.equals("%mistakes")) {
+				var = _mistakes;
+			} else if (line.startsWith("%")) {
+				var = new WordList(line.substring(1));
+				if (!var.getName().equals("mistakes")) {
 					_wordLists.add(var);
 				}
 			} else {
-				if (!var.containsWord(line)) {
-					var.add(new Word(line));
-				}
+				var.add(new Word(line));
 			}
 		}
 		
 		levelsFile.close();
 		
-		overrideFile();
-	}
-	
-	/** This method converts a line from a file into a format suitable
-	 *  for creating a word object, then adds it to a wordlist.
-	 */
-	private void addWordFromString(WordList var, String line) {
-		String[] wordInfo = line.split("\\s+");	
-		if (wordInfo.length > 4) {
-			String word = "";
-			for (int i = 0; i < wordInfo.length - 3; i++) {
-				word = word + " " + wordInfo[i];
-			}
-			String[] twoWords = {word, wordInfo[wordInfo.length - 3], wordInfo[wordInfo.length - 2], wordInfo[wordInfo.length - 1]};
-			wordInfo = twoWords;
-		}
-		
-		
-		var.add(new Word(wordInfo[0], 
-				Integer.parseInt(wordInfo[1]), 
-				Integer.parseInt(wordInfo[2]), 
-				Integer.parseInt(wordInfo[3])));
 	}
 
 	/** This method checks whether there is already a WordList object
@@ -173,7 +174,7 @@ public class DataStore {
 	 *  the file and creating a new one. 
 	 */
 	public void overrideFile() {
-		File data = new File(".Data.txt");
+		File data = new File("res/." + _currentUser + ".data");
 		data.delete();
 		try {
 			data.createNewFile();
@@ -187,7 +188,8 @@ public class DataStore {
 		_currentLevel = "Level 1";
 		_wordLists = new ArrayList<WordList>();
 		_mistakes = new WordList("mistakes");
-		readFromFile();
+		setupLists();
+		readUserFile();
 	}
 
 	public void overrideAll() {
@@ -199,24 +201,27 @@ public class DataStore {
 	 */
 	public void writeDataToFile() {
 
-		String fileName = ".Data.txt";
+		if (_currentUser != null) {
+			
+			saveUsers();
 
-		if (_currentLevel == null) {
-			_currentLevel = "Level 1";
-		}
-		
-		addToFile(_currentLevel, fileName);
+			String fileName = "res/." + _currentUser + ".data";
 
-		addToFile("%" + _mistakes.getName(), fileName);
-		for (Word var : _mistakes.returnCopyOfList()) {
-			addToFile(var.toString(), fileName);
-		}
-		
-		for (WordList var : _wordLists) {
-			addToFile("%" + var.getName(), fileName);
-			for (Word var1 : var.returnCopyOfList()) {
-				addToFile(var1.toString(), fileName);
+			addToFile("" + _score, fileName);
+			addToFile(getVoiceName(), fileName);
+
+			addToFile("%" + _mistakes.getName(), fileName);
+			for (Word var : _mistakes.returnCopyOfList()) {
+				addToFile(var.toString(), fileName);
 			}
+
+			for (WordList var : _wordLists) {
+				addToFile("%" + var.getName(), fileName);
+				for (Word var1 : var.returnCopyOfList()) {
+					addToFile(var1.toString(), fileName);
+				}
+			}
+
 		}
 
 	}
@@ -272,6 +277,7 @@ public class DataStore {
 	 */
 	
 	private String _voice = "(voice_kal_diphone)";
+	private ArrayList<String> users = new ArrayList<String>();
 	
 	public void setVoice(String voice) {
 		
@@ -287,6 +293,117 @@ public class DataStore {
 	
 	public String getVoice() {
 		return _voice;
+	}
+	
+	private String getVoiceName() {
+		if (_voice.equals("(voice_kal_diphone)")) {
+			return "American";
+		} else if (_voice.equals("(voice_rab_diphone)")) {
+			return "British";
+		} else if (_voice.equals("(voice_akl_nz_jdt_diphone)")) {
+			return "New Zealander";
+		} else {
+			return "American";
+		}
+	}
+	
+	public void setUser(String user) {
+		
+		_currentUser = user;
+		readUserFile();
+		
+	}
+	
+	public void createUser(String user) {
+		
+		_currentUser = user;
+		users.add(user);
+		saveUsers();
+		readUserFile();
+		
+	}
+	
+	public void deleteUser(String user) {
+		
+		
+		
+	}
+	
+	private void generateUsers() {
+
+		users.add("Select User:");
+		File file = new File("res/.users");
+		if (file.exists()) {
+			Scanner scan = null;
+			try {
+				scan = new Scanner(file);
+			} catch (FileNotFoundException e) {
+				e.getStackTrace();
+			}
+
+			while (scan.hasNextLine()) {
+				String line = scan .nextLine();
+				users.add(line);
+			}
+
+			scan.close();
+
+		} else {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				e.getStackTrace();
+			}
+		}
+
+	}
+	
+	private void saveUsers() {
+
+		File file = new File("res/.users");
+
+		file.delete();
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			e.getStackTrace();
+		}
+
+		for (String user : users) {
+			if (!user.equals("Select User:")) {
+				addToFile(user, file.getAbsolutePath());
+			}
+		}
+
+	}
+	
+	public ArrayList<String> getUsers() {
+		return users;
+	}
+	
+	/*
+	 * 
+	 * Do Something!
+	 * 
+	 */
+	
+	private void setupVariables() {
+		
+		for (WordList list : _wordLists) {
+			int scoreRequired = ((list.getSize()/10)*9*90);
+			if (_score < scoreRequired) {
+				break;
+			}
+		}
+		
+	}
+	
+	private int getTotalScore() {
+		int totalScore = 0;
+		for (WordList list : _wordLists) {
+			totalScore += ((list.getSize()/10)*9*90);
+		}
+		return totalScore;
 	}
 	
 	

@@ -1,5 +1,6 @@
 package GUI;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -32,7 +33,7 @@ public class QuizScreen extends GUIElement {
 	private JButton _submit = new JButton("Submit Word");
 	private JButton _skip = new JButton("Skip Word");
 	private JButton _giveUp = new JButton("Give Up");
-	private JButton _defButton = new JButton("Click here\nfor definition!");
+	private JButton _defButton = new JButton("Click here for definition!");
 	private JLabel _feedback = new JLabel();
 	private JTextArea _previousAttempts = new JTextArea("PREVIOUS ATTEMPTS:\n");
 	
