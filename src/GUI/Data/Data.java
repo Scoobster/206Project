@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Data {
@@ -14,8 +16,12 @@ public class Data {
 	private String _currentUser = null;
 	private List<String> _users;
 	
+	private String _currentVoice = "American";
+	private Map<String,String> _voices;
+	
 	public Data() {
 		generateUsers();
+		initialiseVoices();
 		/*
 		 * TO BE IMPLEMENTED
 		 */
@@ -53,6 +59,15 @@ public class Data {
 	 * Method that reads the current users data file and loads all their previous data
 	 */
 	private void loadData() {
+		/*
+		 * TO BE IMPLEMENTED
+		 */
+	}
+	
+	/**
+	 * Method that clears all data held in this object and deletes and recreates the save files
+	 */
+	public void clearData() {
 		/*
 		 * TO BE IMPLEMENTED
 		 */
@@ -132,6 +147,13 @@ public class Data {
 		 */
 	}
 	
+	public void logout() {
+		saveData();
+		_currentUser = null;
+		_wordLists = new ArrayList<Word>();
+		setupLists();
+	}
+	
 	/**
 	 * Method that returns the list of users
 	 * @return
@@ -139,5 +161,48 @@ public class Data {
 	public List<String> getUserList() {
 		return _users;
 	}
+	
+	/**
+	 * Method that initialises the variables associated to the festival voices
+	 */
+	private void initialiseVoices() {
+		_currentVoice = "American";
+		_voices = new HashMap<String,String>();
+		_voices.put("American", "(voice_kal_diphone)");
+		_voices.put("British", "(voice_rab_diphone)");
+		_voices.put("New Zealander", "(voice_akl_nz_jdt_diphone)");
+	}
+	
+	/**
+	 * Returns the name of the festival voice set as the current voice
+	 * @return
+	 */
+	public String getVoice() {
+		return _currentVoice;
+	}
+	
+	/**
+	 * Method that returns the code required to set the voice on festival, if name is not a voice method returns null
+	 * @param name
+	 * @return
+	 */
+	public String getVoiceCode(String name) {
+		if (_voices.containsKey(name)) {
+			return _voices.get(name);
+		}
+		return null;
+	}
+	
+	/**
+	 * Method that sets a new current festival voice
+	 * @param name
+	 */
+	public void setVoice(String name) {
+		if (_voices.containsKey(name)) {
+			_currentVoice = name;
+		}
+	}
+	
+	
 	
 }

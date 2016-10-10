@@ -106,17 +106,20 @@ public class MainMenu extends GUIElement {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object src = e.getSource();
-		
+		/*
 		if (src.equals(_quiz)) {
 			changeScreen(new LevelSelect(_GUI, _data));
 		} else if (src.equals(_review)) {
+			/*
+			 * Will need to be changed
+			 *
 			changeScreen(new QuizScreen(_GUI, _data));
 		} else if (src.equals(_rewards)) {
 			changeScreen(new RewardsScreen(_GUI, _data));
 		} else if (src.equals(_stats)) {
 			changeScreen(new ViewStats(_GUI, _data));
-		} else if (src.equals(_settings)) {
-			changeScreen(new Sttings(_GUI, _data));
+		} else */if (src.equals(_settings)) {
+			changeScreen(new Settings(_GUI, _data));
 		} else if (src.equals(_logout)) {
 			_data.logout();
 			changeScreen(new Login(_GUI, _data));
