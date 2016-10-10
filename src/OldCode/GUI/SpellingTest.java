@@ -1,4 +1,4 @@
-package GUI;
+package OldCode.GUI;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
 import GUI.Data.DataStore;
-import GUI.Data.Word;
+import OldCode.GUI.Data.Word;
 
 public class SpellingTest extends GUIElement {
 
@@ -127,7 +127,7 @@ public class SpellingTest extends GUIElement {
 		_view.setPreferredSize(new Dimension(150,50));
 		add(_view,c);
 
-		speakWord(_wordlist.get(_wordNum).getWord());
+		speakWord(_wordlist.get(_wordNum).toString());
 
 	}
 
@@ -156,7 +156,7 @@ public class SpellingTest extends GUIElement {
 	public void actionPerformed(ActionEvent e) {
 
 		if (e.getSource().equals(_speak)) {
-			speakWord(_wordlist.get(_wordNum).getWord());
+			speakWord(_wordlist.get(_wordNum).toString());
 		} else if (e.getSource().equals(_view)) {
 			_GUI.getContentPane().add(new ViewStats(_GUI, _data, this));
 			_GUI.revalidate();
@@ -169,7 +169,7 @@ public class SpellingTest extends GUIElement {
 				JOptionPane.showMessageDialog(this, "Please only enter characters between a-z.");
 				return;
 			}
-			String word = _wordlist.get(_wordNum).getWord().toLowerCase();
+			String word = _wordlist.get(_wordNum).toString().toLowerCase();
 			_labelOfStuff.setText("");
 
 			if (_attemptCount == 0) {
@@ -224,7 +224,7 @@ public class SpellingTest extends GUIElement {
 
 			}
 
-			speakWord(_wordlist.get(_wordNum).getWord());
+			speakWord(_wordlist.get(_wordNum).toString());
 
 		}
 

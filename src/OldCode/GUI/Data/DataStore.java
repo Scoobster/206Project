@@ -1,4 +1,4 @@
-package GUI.Data;
+package OldCode.GUI.Data;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,22 +21,63 @@ public class DataStore {
 
 	private String _currentUser = null;
 	private int _score = 0;
-
+	private String _listPath = "NZCER-spelling-lists.txt";
+	
+	private String _voice = "(voice_kal_diphone)";
+	private ArrayList<String> users = new ArrayList<String>();
+	
 	private String _currentLevel = "Level 1";
 	private ArrayList<WordList> _wordLists = new ArrayList<WordList>();
 	private WordList _mistakes = new WordList("mistakes");
 	
+	/**
+	 * Constructor, setups up the WordList for testing and the users list
+	 */
 	public DataStore() {
 		setupLists();
 		generateUsers();
 	}
 	
-	/*
-	 * 
-	 * CHECK THIS SHIT!
-	 * 
+	/**
+	 * Sets up the current list of words
 	 */
+	public void setupLists() {
+		
+		_wordLists = new ArrayList<WordList>();
+
+		File levels = new File(_listPath);
+		Scanner levelsFile = null;
+		try {
+			levelsFile = new Scanner(levels);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		WordList var = new WordList(levelsFile.nextLine().substring(1));
+		_wordLists.add(var);
+
+		while (levelsFile.hasNextLine()) {
+			String line = levelsFile.nextLine();
+			if (line.equals("%mistakes")) {
+				var = _mistakes;
+			} else if (line.startsWith("%")) {
+				var = new WordList(line.substring(1));
+				if (!var.getName().equals("mistakes")) {
+					_wordLists.add(var);
+				}
+			} else {
+				var.add(new Word(line));
+			}
+		}
+		
+		levelsFile.close();
+		
+	}
 	
+	/**
+	 * Getting the saved data for the current user
+	 */
 	private void readUserFile() {
 		
 		File file = new File("res/." + _currentUser + ".data");
@@ -47,8 +88,10 @@ public class DataStore {
 			try {
 				scanFile = new Scanner(file);
 			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 
 			if (scanFile.hasNextLine()) {
 				
@@ -80,8 +123,6 @@ public class DataStore {
 					}
 				}
 				
-				
-				
 			}
 			scanFile.close();
 		} else {
@@ -92,43 +133,9 @@ public class DataStore {
 			}
 		}
 	}
-	/*
-	 * CHECK THIS SHIT!
-	 */
-	
-	public void setupLists() {
 
-		File levels = new File("NZCER-spelling-lists.txt");
-		Scanner levelsFile = null;
-		try {
-			levelsFile = new Scanner(levels);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		WordList var = new WordList(levelsFile.nextLine().substring(1));
-		_wordLists.add(var);
-
-		while (levelsFile.hasNextLine()) {
-			String line = levelsFile.nextLine();
-			if (line.equals("%mistakes")) {
-				var = _mistakes;
-			} else if (line.startsWith("%")) {
-				var = new WordList(line.substring(1));
-				if (!var.getName().equals("mistakes")) {
-					_wordLists.add(var);
-				}
-			} else {
-				var.add(new Word(line));
-			}
-		}
-		
-		levelsFile.close();
-		
-	}
-
-	/** This method checks whether there is already a WordList object
-	 *  in the _wordlists field with a name matching the String parameter. 
+	/** 
+	 * Checks if a list with the same name already exists 
 	 */
 	private boolean doesListExist(String listName) {
 		for (WordList var : _wordLists) {
@@ -139,9 +146,8 @@ public class DataStore {
 		return false;
 	}
 
-	/** This method gets a WordList object matching the name of the 
-	 *  String parameter.
-	 *  returns null if no list is stored.
+	/** 
+	 * Returns WordList of the same name, or null if list does not exist
 	 */
 	public WordList getList(String listName) {
 		for (WordList var : _wordLists) {
@@ -152,7 +158,8 @@ public class DataStore {
 		return null;
 	}
 
-	/** This method returns an array of Strings representing the level names 
+	/** 
+	 * This method returns an array of Strings representing the level names 
 	 */
 	public String[] getNamesOfLists() {
 		String[] names = new String[_wordLists.size()];
@@ -164,14 +171,15 @@ public class DataStore {
 		return names;
 	}
 
-	/** This method gets the Wordlist representing the words failed
+	/** 
+	 * This method gets the Wordlist representing the words failed
 	 */
 	public WordList getMistakes() {
 		return _mistakes;
 	}
 
-	/** This method overwrites the data stored in the file .Data.txt by deleting
-	 *  the file and creating a new one. 
+	/** 
+	 * This method overwrites the data stored in the file users data file by deleting the file and creating a new one. 
 	 */
 	public void overrideFile() {
 		File data = new File("res/." + _currentUser + ".data");
@@ -183,21 +191,28 @@ public class DataStore {
 		}
 	}
 	
-	
+	/**
+	 * Overrides the data currently in the DataStore object
+	 */
 	public void overrideData() {
 		_currentLevel = "Level 1";
+		_score = 0;
 		_wordLists = new ArrayList<WordList>();
 		_mistakes = new WordList("mistakes");
 		setupLists();
 		readUserFile();
 	}
 
+	/**
+	 * Calls both overrideFile() and overrideData() methods
+	 */
 	public void overrideAll() {
 		overrideFile();
 		overrideData();
 	}
 	
-	/** This method writes the data stored in this object to the file .Data.txt
+	/** 
+	 * This method writes the data stored in this object to the current user's data file
 	 */
 	public void writeDataToFile() {
 
@@ -212,13 +227,13 @@ public class DataStore {
 
 			addToFile("%" + _mistakes.getName(), fileName);
 			for (Word var : _mistakes.returnCopyOfList()) {
-				addToFile(var.toString(), fileName);
+				addToFile(var.getStats(), fileName);
 			}
 
 			for (WordList var : _wordLists) {
 				addToFile("%" + var.getName(), fileName);
 				for (Word var1 : var.returnCopyOfList()) {
-					addToFile(var1.toString(), fileName);
+					addToFile(var1.getStats(), fileName);
 				}
 			}
 
@@ -226,7 +241,8 @@ public class DataStore {
 
 	}
 
-	/**This method adds a string on a new line to a file
+	/**
+	 * This method adds a string on a new line to a file
 	 */
 	private void addToFile(String word, String fileName) {
 		String newLine = System.getProperty("line.separator");
@@ -242,21 +258,23 @@ public class DataStore {
 
 	}
 	
-	/** This method sets the value of _currentLevel 
+	/** 
+	 * This method sets the value of _currentLevel 
 	 */
 	public void setCurrentLevel(String level) {
 		_currentLevel = level;
 	}
 
-	/** This method returns the WordList of _currentLevel 
+	/** 
+	 * This method returns the name of the current level
 	 */
 	public String getCurrentLevelName() {
 		return _currentLevel;
 	}
 
 
-	/** This method returns the name of the level above 
-	 *  current level.
+	/** 
+	 * This method returns the name of the level above current level.
 	 */
 	public String getNextLevelName() throws ArrayIndexOutOfBoundsException {
 		String[] names = getNamesOfLists();
@@ -271,14 +289,10 @@ public class DataStore {
 		return names[0];
 	}
 	
-	
 	/**
-	 * Andrew Additions!!!!!!!!!!!!!!!!!!!
+	 * Method that sets the festival voice
+	 * @param voice
 	 */
-	
-	private String _voice = "(voice_kal_diphone)";
-	private ArrayList<String> users = new ArrayList<String>();
-	
 	public void setVoice(String voice) {
 		
 		if (voice.equals("American")) {
@@ -291,10 +305,18 @@ public class DataStore {
 		
 	}
 	
+	/**
+	 * Returns the festival voice command to change the voice
+	 * @return
+	 */
 	public String getVoice() {
 		return _voice;
 	}
 	
+	/**
+	 * Returns the name of the set voice on festival
+	 * @return
+	 */
 	private String getVoiceName() {
 		if (_voice.equals("(voice_kal_diphone)")) {
 			return "American";
@@ -307,33 +329,59 @@ public class DataStore {
 		}
 	}
 	
+	/**
+	 * Sets the current user and imports their data
+	 * @param user
+	 */
 	public void setUser(String user) {
-		
 		_currentUser = user;
 		readUserFile();
-		
 	}
 	
+	/**
+	 * Creates a new user and sets them as the current user
+	 * @param user
+	 */
 	public void createUser(String user) {
-		
-		_currentUser = user;
 		users.add(user);
 		saveUsers();
-		readUserFile();
-		
+		setUser(user);
 	}
 	
+	/**
+	 * Method that deletes a user
+	 * @param user
+	 */
 	public void deleteUser(String user) {
 		
+		if (!users.contains(user)) {
+			return;
+		}
 		
+		if (user.equals(_currentUser)) {
+			_currentLevel = "Level 1";
+			_wordLists = new ArrayList<WordList>();
+			_mistakes = new WordList("mistakes");
+			setupLists();
+		}
+		
+		users.remove(user);
+		saveUsers();
+		
+		File file = new File("res/." + user + ".data");
+		file.delete();
 		
 	}
 	
+	/**
+	 * Method that reads the file listing the users to generate it's list of users
+	 */
 	private void generateUsers() {
 
 		users.add("Select User:");
 		File file = new File("res/.users");
 		if (file.exists()) {
+			System.out.println(file.getAbsolutePath());
 			Scanner scan = null;
 			try {
 				scan = new Scanner(file);
@@ -358,6 +406,9 @@ public class DataStore {
 
 	}
 	
+	/**
+	 * Method that saves the current list of users to the save file
+	 */
 	private void saveUsers() {
 
 		File file = new File("res/.users");
@@ -377,15 +428,41 @@ public class DataStore {
 
 	}
 	
+	/**
+	 * Returns a list of all the users
+	 * @return
+	 */
 	public ArrayList<String> getUsers() {
 		return users;
 	}
 	
-	/*
-	 * 
-	 * Do Something!
-	 * 
+	/**
+	 * Returns the name of the current user
+	 * @return
 	 */
+	public String getCurrentUser() {
+		return _currentUser;
+	}
+	
+	/**
+	 * Method that sets the current spelling word list and updates the word list
+	 * @throws FileNotFoundException 
+	 */
+	public void setList(String filePath) {
+		_listPath = filePath;
+		overrideAll();
+		setupLists();
+	}
+	
+	/**
+	 * Returns the current score
+	 * @return
+	 */
+	private int getScore() {
+		return _score;
+	}
+		
+	/*
 	
 	private void setupVariables() {
 		
@@ -406,5 +483,5 @@ public class DataStore {
 		return totalScore;
 	}
 	
-	
+	*/
 }

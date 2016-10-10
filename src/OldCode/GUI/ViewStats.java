@@ -1,4 +1,4 @@
-package GUI;
+package OldCode.GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -17,8 +17,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import GUI.Data.DataStore;
-import GUI.Data.Word;
-import GUI.Data.WordList;
+import OldCode.GUI.Data.Word;
+import OldCode.GUI.Data.WordList;
 
 public class ViewStats extends GUIElement {
 	

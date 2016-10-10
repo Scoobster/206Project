@@ -1,4 +1,4 @@
-package GUI;
+package OldCode.GUI;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -62,11 +62,11 @@ public class LevelSelect extends GUIElement {
 			String item = _selector.getSelectedItem().toString();
 			if (item.equals("Continue")) {
 				_GUI.getContentPane().removeAll();
-				_GUI.getContentPane().add(new SpellingTest(_GUI, _data, _data.getList(_data.getCurrentLevelName()).getRandomTen(), false));
+				_GUI.getContentPane().add(new SpellingTest(_GUI, _data, _data.getList(_data.getCurrentLevelName()).getRandomWords(), false));
 			} else {
 				_data.setCurrentLevel(item);
 				_GUI.getContentPane().removeAll();
-				_GUI.getContentPane().add(new SpellingTest(_GUI, _data, _data.getList(item).getRandomTen(), false));
+				_GUI.getContentPane().add(new SpellingTest(_GUI, _data, _data.getList(item).getRandomWords(), false));
 			}
 			
 			

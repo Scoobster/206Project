@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="OldCode/GUI/" kind="src" path="src"/>
 	<classpathentry kind="lib" path="libs/jna-3.5.2.jar"/>
 	<classpathentry kind="lib" path="libs/platform-3.5.2.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-api-1.7.10.jar"/>

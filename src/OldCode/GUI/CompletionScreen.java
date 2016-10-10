@@ -1,4 +1,4 @@
-package GUI;
+package OldCode.GUI;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -121,11 +121,11 @@ public class CompletionScreen extends GUIElement {
 		if (source.equals(_playAgain)) {
 			_GUI.getContentPane().add(new LevelSelect(_GUI, _data));
 		} else if (source.equals(_tryAgain)) {
-			_GUI.getContentPane().add(new SpellingTest(_GUI, _data, _data.getList(_data.getCurrentLevelName()).getRandomTen(), false));
+			_GUI.getContentPane().add(new SpellingTest(_GUI, _data, _data.getList(_data.getCurrentLevelName()).getRandomWords(), false));
 		} else if (source.equals(_return)) {
 			_GUI.getContentPane().add(new MainMenu(_GUI, _data));
 		} else if (source.equals(_review)) {
-			_GUI.getContentPane().add(new SpellingTest(_GUI, _data, _data.getMistakes().getRandomTen(), true));
+			_GUI.getContentPane().add(new SpellingTest(_GUI, _data, _data.getMistakes().getRandomWords(), true));
 		}
 		
 		_GUI.revalidate();
