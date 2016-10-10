@@ -1,11 +1,14 @@
 package GUI;
 
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import GUI.Data.Data;
+import GUI.Data.Word;
+
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
@@ -106,19 +109,19 @@ public class MainMenu extends GUIElement {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object src = e.getSource();
-		/*
+		
 		if (src.equals(_quiz)) {
 			changeScreen(new LevelSelect(_GUI, _data));
 		} else if (src.equals(_review)) {
-			/*
-			 * Will need to be changed
-			 *
-			changeScreen(new QuizScreen(_GUI, _data));
+			// Should call QuizScreen
+			changeScreen(new SpellingTest(_GUI, _data, (List<Word>) _data.getMistakes(), true));
 		} else if (src.equals(_rewards)) {
-			changeScreen(new RewardsScreen(_GUI, _data));
+			changeScreen(new Video(_GUI, _data, false));
 		} else if (src.equals(_stats)) {
-			changeScreen(new ViewStats(_GUI, _data));
-		} else */if (src.equals(_settings)) {
+			_GUI.getContentPane().add(new ViewStats(_GUI, _data, this));
+			_GUI.revalidate();
+			_GUI.repaint();
+		} else if (src.equals(_settings)) {
 			changeScreen(new Settings(_GUI, _data));
 		} else if (src.equals(_logout)) {
 			_data.logout();

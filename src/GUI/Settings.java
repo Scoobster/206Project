@@ -9,12 +9,15 @@ import javax.swing.JPanel;
 import GUI.Data.Data;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.GridBagConstraints;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.Insets;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -28,10 +31,10 @@ public class Settings extends GUIElement {
 	private JButton _clear;
 	private JButton _delete;
 	private JButton _return;
-	private JComboBox _voiceSelect;
+	private JComboBox<String> _voiceSelect;
 	
+	private JFileChooser _fileChoose = new JFileChooser();
 	
-
 	/**
 	 * Create the panel.
 	 */
@@ -61,7 +64,8 @@ public class Settings extends GUIElement {
 		gbc_lblSelectAVoice.gridy = 2;
 		add(lblSelectAVoice, gbc_lblSelectAVoice);
 		
-		_voiceSelect = new JComboBox();
+		_voiceSelect = new JComboBox<String>();
+		_voiceSelect.setFont(new Font("Dialog", Font.BOLD, 25));
 		GridBagConstraints gbc__voiceSelect = new GridBagConstraints();
 		gbc__voiceSelect.fill = GridBagConstraints.HORIZONTAL;
 		gbc__voiceSelect.gridwidth = 2;
@@ -126,6 +130,11 @@ public class Settings extends GUIElement {
 		gbc__return.gridy = 11;
 		add(_return, gbc__return);
 		
+		for (String voice : _data.getVoicesSet()) {
+			_voiceSelect.addItem(voice);
+		}
+		_voiceSelect.setSelectedItem(_data.getVoice());
+		
 		_voiceSelect.addActionListener(this);
 		_test.addActionListener(this);
 		_selectList.addActionListener(this);
@@ -145,8 +154,16 @@ public class Settings extends GUIElement {
 		} else if (src.equals(_test)) {
 			testVoice();
 		} else if (src.equals(_selectList)) {
-			
-		}
+			selectAFile();
+		} else if (src.equals(_addRemove)) {
+			changeScreen(new AddRemoveWord(_GUI, _data, this));
+		} else if (src.equals(_clear)) {
+			clearData();
+		} else if (src.equals(_delete)) {
+			deleteAUser();
+		} else if (src.equals(_return)) {
+			changeScreen(new MainMenu(_GUI, _data));
+		} 
 		
 	}
 	
@@ -171,4 +188,59 @@ public class Settings extends GUIElement {
 		};
 		worker.execute();
 	}
+
+	/**
+	 * Method that makes the user select
+	 */
+	private void selectAFile() {
+		int reply = _fileChoose.showOpenDialog(_GUI);
+		if (reply == JFileChooser.APPROVE_OPTION) {
+			int replyTwo = JOptionPane.showConfirmDialog(_GUI, "Are you sure you want to load a new spelling list?\nWarning: This WILL clear your data!");
+			if (replyTwo == JOptionPane.YES_OPTION) {
+				_data.setList(_fileChoose.getSelectedFile().getAbsolutePath());
+			}
+		}
+	}
+
+	/**
+	 * Method that makes a confirm dialog that if the user clicks a confirm, then will call clearData on the Data instance
+	 */
+	private void clearData() {
+		int reply = JOptionPane.showConfirmDialog(_GUI, "Are you sure you want to clear the data?\nWarning: This can NOT be recovered!");
+		if (reply == JOptionPane.YES_OPTION) {
+			_data.clearData();
+		}
+	}
+	
+	/**
+	 * Method that asks the user to choose a user and then deletes that user
+	 */
+	private void deleteAUser() {
+		
+		String user = (String) JOptionPane.showInputDialog(_GUI, 
+		        "Select A User To Delete", "User",
+		        JOptionPane.QUESTION_MESSAGE, 
+		        null, 
+		        _data.getUserList().toArray(), 
+		        _data.getUserList().toArray()[0]);
+		
+		int reply;
+		if (user.equals(_data.getUser())) {
+			reply = JOptionPane.showConfirmDialog(_GUI, "Are You Sure You Wish To Delete The Current User: " + user + "?");
+		} else {
+			reply = JOptionPane.showConfirmDialog(_GUI, "Are You Sure You Wish To Delete User: " + user + "?");
+		}
+		
+		if (reply == JOptionPane.YES_OPTION) {
+			_data.deleteUser(user);
+			if (user.equals(_data.getUser())) {
+				JOptionPane.showMessageDialog(_GUI, "User Deleted\nYou Will Be Redirected Back To The Login Screen");
+				changeScreen(new Login(_GUI, _data));
+			} else {
+				JOptionPane.showMessageDialog(_GUI, "User Deleted");
+			}
+		}
+		
+	}
+	
 }

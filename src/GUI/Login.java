@@ -120,12 +120,14 @@ public class Login extends GUIElement {
 			}
 			_data.setUser(user);
 		} else if (source.equals(_new)) {
-			String newUser = JOptionPane.showInputDialog("Please enter a user name:").trim();
-			if (_data.getUserList().contains(newUser)) {
+			String newUser = JOptionPane.showInputDialog("Please enter a user name:");
+			if (newUser == null ) {
+				return;
+			} else if (_data.getUserList().contains(newUser)) {
 				JOptionPane.showMessageDialog(this, "ERROR: Sorry that user name is already taken");
 				return;
 			}
-			_data.addNewUser(newUser);
+			_data.addNewUser(newUser.trim());
 		}
 		
 		changeScreen(new MainMenu(_GUI, _data));
