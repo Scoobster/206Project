@@ -156,7 +156,7 @@ public class Settings extends GUIElement {
 		} else if (src.equals(_selectList)) {
 			selectAFile();
 		} else if (src.equals(_addRemove)) {
-			changeScreen(new AddRemoveWord(_GUI, _data, this));
+			changeScreen(new AddRemoveWord(_GUI, _data));
 		} else if (src.equals(_clear)) {
 			clearData();
 		} else if (src.equals(_delete)) {
